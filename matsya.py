@@ -7,7 +7,7 @@ import pandas as pd
 
 app = FastAPI()
 
-# Query arguments
+# Parameters required to compute cost of feed
 query_params = {
     "initial_weight": (float, 25),
     "final_weight": (float, 1000),
@@ -44,6 +44,9 @@ def evaluate(params: query_model = Depends()):
 
 def matsya(initial_weight, final_weight, duration, feed_multiplier, fish_qty, feed_cost_per_kg, get_csv):
     
+    """
+    Takes the input parameters to compute the costs for feed
+    """
     growth_rate = (final_weight - initial_weight) / duration
 
     feed_sum = initial_weight
@@ -57,7 +60,6 @@ def matsya(initial_weight, final_weight, duration, feed_multiplier, fish_qty, fe
     df = pd.DataFrame(feed, columns=["per_day_per_fish_weight"])
     df["per_day_per_fish_feed_weight"] = [ (x*feed_multiplier) for x in df.per_day_per_fish_weight ]
     
-    # print(f"Total feed cost for {fish_qty} fishes = Rs {total_feed_cost}")
     feed_weight_per_fish = df.per_day_per_fish_weight.sum() / 1000
     total_feed_weight = feed_weight_per_fish * fish_qty
     total_feed_cost = total_feed_weight * feed_cost_per_kg
